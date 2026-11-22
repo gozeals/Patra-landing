@@ -14,46 +14,58 @@
   $('#year').textContent = new Date().getFullYear();
   P.warmUp();
 
-  /* ======================= INTRO VIDEO ======================= */
-  (function intro() {
-    const root = document.documentElement, box = $('#intro');
-    if (!root.classList.contains('has-intro')) { box.remove(); return; }
-    const video = $('#introVideo');
-    let done = false, failTimer;
-    const finish = () => {
-      if (done) return; done = true;
-      clearTimeout(failTimer);
-      try { sessionStorage.setItem('patra:intro', '1'); } catch (e) {}
-      box.classList.add('leaving');
-      root.classList.remove('has-intro');
-      box.setAttribute('aria-hidden', 'true');
-      setTimeout(() => { try { video.pause(); } catch (e) {} box.remove(); revealHero(); }, 560);   // box.remove() ikut membuang video latar
+  /* ======================= VIDEO LOGO (visual utama awal halaman) ======================= */
+  // Bukan splash: tidak mengunci scroll, tidak menyembunyikan header, konten lain tidak menunggu.
+  // src & autoplay diset di index.html (skrip tepat setelah <video>) agar unduhan mulai sedini mungkin.
+  // Diputar sekali tiap halaman dibuka, lalu berhenti di frame akhir (logo utuh).
+  (function brandVideo() {
+    const stage = $('#top'), video = $('#brandVideo');
+    if (!stage || !video) return;
+    const srcFor = tall => 'assets/video/patra-logo-reveal-' + (tall ? 'portrait' : 'desktop') + '.mp4';
+    const onMeta = fn => { if (video.readyState >= 1) fn(); else video.addEventListener('loadedmetadata', fn, { once: true }); };
+    const toLastFrame = () => { if (video.duration) video.currentTime = Math.max(0, video.duration - 0.05); };
+    const fallback = () => { stage.classList.add('is-fallback'); try { video.pause(); } catch (e) {} };
+
+    video.addEventListener('error', fallback);
+    if (video.error) { fallback(); return; }
+
+    // Safari bisa memutar ulang / mengosongkan video yang sudah selesai saat digulir keluar lalu kembali.
+    // Karena itu frame akhir dibekukan ke <img>: logo tetap tampil apa pun yang dilakukan browser pada video.
+    const still = $('#brandStill');
+    let done = false;
+    const freeze = () => {
+      done = true; video.autoplay = false;
+      const c = document.createElement('canvas');
+      c.width = video.videoWidth; c.height = video.videoHeight;
+      try { c.getContext('2d').drawImage(video, 0, 0); } catch (e) { return; }
+      c.toBlob(b => {
+        if (!b) return;
+        URL.revokeObjectURL(still.src);
+        still.onload = () => stage.classList.add('is-done');
+        still.src = URL.createObjectURL(b);
+      }, 'image/jpeg', 0.92);
     };
-    $('#introSkip').addEventListener('click', finish);
-    document.addEventListener('keydown', function onKey(e) { if (e.key === 'Escape') { finish(); document.removeEventListener('keydown', onKey); } });
+    video.addEventListener('ended', freeze);
+    video.addEventListener('seeked', () => { if (done || reduceMotion) freeze(); });
 
-    const showStatic = (ms) => { box.classList.add('static'); setTimeout(finish, ms); };
-    if (root.classList.contains('intro-static')) { showStatic(1100); return; }
-
-    const mobile = P.isMobile();
-    video.src = 'assets/video/patra-logo-reveal-' + (mobile ? 'portrait' : 'desktop') + '.mp4';
-    // HP: salinan video buram di belakang agar sisi atas/bawah menyatu dengan warna video
-    let bg = null;
-    if (mobile) {
-      bg = video.cloneNode(); bg.className = 'intro__video intro__video--bg'; bg.removeAttribute('id');
-      bg.src = video.src; video.before(bg);
-      bg.play && bg.play().catch(() => {});
+    if (reduceMotion) {
+      onMeta(toLastFrame);                          // tanpa gerak: langsung frame akhir, animasi tidak diputar
+    } else {
+      // Autoplay ditolak (mis. mode hemat daya iOS) → logo statis. Jaringan lambat / tab latar: poster
+      // gradien tampil sampai video siap (tanpa timer — browser menunda autoplay di tab latar).
+      const p = video.play();
+      if (p && p.catch) p.catch(e => { if (e.name === 'NotAllowedError') fallback(); });   // AbortError (src diganti) bukan kegagalan
     }
-    video.addEventListener('playing', () => {
-      clearTimeout(failTimer); video.classList.add('playing');
-      if (bg) { try { bg.currentTime = video.currentTime; } catch (e) {} bg.classList.add('playing'); }
-    }, { once: true });
-    video.addEventListener('ended', finish);
-    video.addEventListener('error', () => showStatic(900));
-    failTimer = setTimeout(() => { if (!video.classList.contains('playing')) { try { video.pause(); } catch (e) {} showStatic(900); } }, 3000);
-    const p = video.play();
-    if (p && p.catch) p.catch(() => showStatic(900));
-    setTimeout(finish, 7000);                       // pengaman: intro tidak pernah lebih dari 7 detik
+
+    // Layar diputar (HP/tablet): ganti ke video yang sesuai orientasi agar logo tetap utuh
+    const mq = matchMedia('(orientation: portrait)');
+    mq.addEventListener('change', () => {
+      const next = srcFor(mq.matches);
+      if (stage.classList.contains('is-fallback') || video.src.indexOf(next) > -1) return;
+      const finished = done || reduceMotion, t = video.currentTime;
+      video.src = next;
+      onMeta(() => { if (finished) toLastFrame(); else { video.currentTime = t; video.play().catch(() => {}); } });
+    });
   })();
 
   /* ======================= KONTEN DINAMIS ======================= */
@@ -129,20 +141,36 @@
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
   const menu = $('#mobileMenu'), menuBtn = $('#menuBtn');
-  function openMenu() { menu.hidden = false; document.body.classList.add('menu-open'); menuBtn.setAttribute('aria-expanded', 'true'); $('#menuClose').focus(); }
-  function closeMenu() { if (menu.hidden) return; menu.hidden = true; document.body.classList.remove('menu-open'); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.focus({ preventScroll: true }); }
+  let menuTimer = 0;
+  function openMenu() {
+    clearTimeout(menuTimer);
+    menu.hidden = false;
+    void menu.offsetWidth;                          // paksa reflow agar transisi masuk berjalan
+    menu.classList.add('is-open');
+    document.body.classList.add('menu-open'); menuBtn.setAttribute('aria-expanded', 'true');
+    $('#menuClose').focus({ preventScroll: true });
+  }
+  function closeMenu() {
+    if (!menu.classList.contains('is-open')) return;
+    menu.classList.remove('is-open');
+    document.body.classList.remove('menu-open'); menuBtn.setAttribute('aria-expanded', 'false');
+    menuBtn.focus({ preventScroll: true });
+    menuTimer = setTimeout(() => { menu.hidden = true; }, reduceMotion ? 0 : 320);
+  }
   menuBtn.addEventListener('click', openMenu);
   $('#menuClose').addEventListener('click', closeMenu);
+  menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });   // klik di luar panel
   $$('.mmenu__links a').forEach(a => a.addEventListener('click', closeMenu));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+  matchMedia('(min-width: 1024px)').addEventListener('change', e => { if (e.matches) closeMenu(); });
 
-  // Tautan menu aktif sesuai bagian yang terlihat
-  const links = $$('.nav__links a');
+  // Tautan menu aktif sesuai bagian yang terlihat (navbar & menu HP)
+  const links = $$('.nav__links a, .mmenu__links a');
   const secObs = new IntersectionObserver(entries => entries.forEach(en => {
     if (!en.isIntersecting) return;
     links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + en.target.id));
   }), { rootMargin: '-45% 0px -50% 0px' });
-  links.forEach(l => { const t = $(l.getAttribute('href')); if (t) secObs.observe(t); });
+  new Set(links.map(l => l.getAttribute('href'))).forEach(h => { const t = $(h); if (t) secObs.observe(t); });
 
   /* ======================= ANIMASI MUNCUL ======================= */
   $$('.feat-grid, .biz-grid, .ps-grid').forEach(g => $$('.reveal', g).forEach((el, i) => el.style.setProperty('--d', (i * 70) + 'ms')));
@@ -150,9 +178,7 @@
   const revObs = new IntersectionObserver(entries => entries.forEach(en => {
     if (en.isIntersecting) { en.target.classList.add('in'); revObs.unobserve(en.target); }
   }), { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-  function revealHero() { $$('.hero .reveal').forEach(el => el.classList.add('in')); }
-  $$('.reveal').forEach(el => { if (!el.closest('.hero')) revObs.observe(el); });
-  if (!document.documentElement.classList.contains('has-intro')) requestAnimationFrame(revealHero);
+  $$('.reveal').forEach(el => revObs.observe(el));   // hero kini di bawah video → ikut muncul saat digulir
 
   /* ======================= KARTU 3D (desktop) ======================= */
   const stage = $('#cardStage'), card = $('#heroCard');
@@ -181,7 +207,14 @@
     bar.setAttribute('aria-hidden', show ? 'false' : 'true');
     $$('a', bar).forEach(a => a.tabIndex = show ? 0 : -1);
   };
-  new IntersectionObserver(([en]) => { pastHero = !en.isIntersecting; setBar(); }, { threshold: 0 }).observe($('.hero__ctas'));
+  // Muncul hanya setelah tombol hero terlewati ke atas (bukan saat hero masih di bawah video).
+  // Cek posisi saat menggulir, bukan IntersectionObserver: lompatan anchor dari atas (mis. ke #faq)
+  // melewati tombol hero tanpa pernah "bersinggungan", sehingga observer tidak terpicu.
+  const heroCtas = $('.hero__ctas');
+  let barRaf = 0;
+  const checkHero = () => { barRaf = 0; const past = heroCtas.getBoundingClientRect().bottom < 0; if (past !== pastHero) { pastHero = past; setBar(); } };
+  addEventListener('scroll', () => { if (!barRaf) barRaf = requestAnimationFrame(checkHero); }, { passive: true });
+  checkHero();
   new IntersectionObserver(([en]) => { atContact = en.isIntersecting; setBar(); }, { threshold: 0.15 }).observe($('#kontak'));
 
   /* ======================= SLIDER TESTIMONI ======================= */

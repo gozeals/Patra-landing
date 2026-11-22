@@ -19,73 +19,75 @@
   <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;0,800;1,800&display=swap">
   <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/landing.css">
-
-  <!-- Intro: tampil sekali per sesi. Diputuskan sebelum render agar tidak berkedip. -->
-  <script>
-    (function () {
-      var seen = false, reduce = false;
-      try { seen = sessionStorage.getItem('patra:intro') === '1'; } catch (e) {}
-      try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
-      document.documentElement.className += seen ? ' no-intro' : (' has-intro' + (reduce ? ' intro-static' : ''));
-    })();
-  </script>
+  <link rel="stylesheet" href="assets/css/landing.css?v=20261122l">
 </head>
 <body>
   <a class="skip-link" href="#main">Langsung ke konten</a>
 
-  <!-- ===================== INTRO VIDEO LOGO ===================== -->
-  <div id="intro" class="intro" role="dialog" aria-label="Intro logo PATRA" aria-hidden="false">
-    <video id="introVideo" class="intro__video" muted playsinline preload="auto" poster="assets/img/intro-poster.jpg" aria-hidden="true"></video>
-    <span class="logo logo--lockup intro__static" aria-hidden="true"></span>
-    <button id="introSkip" class="intro__skip" type="button">Lewati <i data-ic="arrow-right" class="ic-sm"></i></button>
-  </div>
-
-  <!-- ===================== NAVBAR ===================== -->
+  <!-- ===================== NAVBAR (pil mengambang) ===================== -->
   <header class="nav" id="nav">
-    <div class="container nav__inner">
-      <a href="#top" class="nav__brand" aria-label="PATRA — ke atas halaman"><span class="logo"></span></a>
+    <div class="nav__inner">
+      <a href="#top" class="nav__brand" aria-label="PATRA — ke atas halaman"><img src="assets/img/logo-wordmark-forest.png" alt="" width="640" height="225"></a>
       <nav class="nav__links" aria-label="Menu utama">
-        <a href="#cara-kerja">Cara Kerja</a>
+        <a href="#top">Beranda</a>
         <a href="#keunggulan">Keunggulan</a>
-        <a href="#usaha">Jenis Usaha</a>
-        <a href="#testimoni">Testimoni</a>
+        <a href="#cara-kerja">Cara Kerja</a>
+        <a href="#usaha">Untuk Bisnis</a>
         <a href="#faq">FAQ</a>
         <a href="#kontak">Kontak</a>
       </nav>
       <div class="nav__actions">
-        <a class="btn btn--primary btn--sm nav__cta" data-order data-pos="navbar" href="https://lynk.id/patra" target="_blank" rel="noopener">Pesan <i data-ic="arrow-up-right"></i></a>
+        <a class="btn btn--primary nav__cta" data-order data-pos="navbar" href="https://lynk.id/patra" target="_blank" rel="noopener"><span>Pesan<span class="nav__cta-more"> Sekarang</span></span> <i data-ic="arrow-up-right"></i></a>
         <button class="btn btn--icon btn--secondary nav__burger" id="menuBtn" type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="mobileMenu"><i data-ic="menu"></i></button>
       </div>
     </div>
   </header>
 
   <div class="mmenu" id="mobileMenu" hidden>
-    <div class="mmenu__head">
-      <span class="logo"></span>
-      <button class="btn btn--icon btn--secondary" id="menuClose" type="button" aria-label="Tutup menu"><i data-ic="x"></i></button>
-    </div>
-    <nav class="mmenu__links" aria-label="Menu ponsel">
-      <a href="#cara-kerja">Cara Kerja <i data-ic="chevron-right"></i></a>
-      <a href="#keunggulan">Keunggulan <i data-ic="chevron-right"></i></a>
-      <a href="#usaha">Jenis Usaha <i data-ic="chevron-right"></i></a>
-      <a href="#testimoni">Testimoni <i data-ic="chevron-right"></i></a>
-      <a href="#faq">FAQ <i data-ic="chevron-right"></i></a>
-      <a href="#kontak">Kontak <i data-ic="chevron-right"></i></a>
-    </nav>
-    <div class="mmenu__foot">
-      <a class="btn btn--primary btn--lg btn--block" data-order data-pos="menu-hp" href="https://lynk.id/patra" target="_blank" rel="noopener">Pesan Sekarang <i data-ic="arrow-right"></i></a>
-      <a class="btn btn--secondary btn--lg btn--block" data-wa data-pos="menu-hp" href="#" target="_blank" rel="noopener"><i data-ic="whatsapp"></i> Tanya via WhatsApp</a>
+    <div class="mmenu__panel">
+      <div class="mmenu__head">
+        <span class="logo"></span>
+        <button class="btn btn--icon btn--secondary" id="menuClose" type="button" aria-label="Tutup menu"><i data-ic="x"></i></button>
+      </div>
+      <nav class="mmenu__links" aria-label="Menu ponsel">
+        <a href="#top">Beranda <i data-ic="chevron-right"></i></a>
+        <a href="#keunggulan">Keunggulan <i data-ic="chevron-right"></i></a>
+        <a href="#cara-kerja">Cara Kerja <i data-ic="chevron-right"></i></a>
+        <a href="#usaha">Untuk Bisnis <i data-ic="chevron-right"></i></a>
+        <a href="#faq">FAQ <i data-ic="chevron-right"></i></a>
+        <a href="#kontak">Kontak <i data-ic="chevron-right"></i></a>
+      </nav>
+      <div class="mmenu__foot">
+        <a class="btn btn--primary btn--lg btn--block" data-order data-pos="menu-hp" href="https://lynk.id/patra" target="_blank" rel="noopener">Pesan Sekarang <i data-ic="arrow-right"></i></a>
+        <a class="btn btn--secondary btn--lg btn--block" data-wa data-pos="menu-hp" href="#" target="_blank" rel="noopener"><i data-ic="whatsapp"></i> Tanya via WhatsApp</a>
+      </div>
     </div>
   </div>
 
   <main id="main">
+    <!-- ===================== VIDEO LOGO (visual utama awal halaman) =====================
+         Bukan splash: tidak mengunci scroll, tidak menyembunyikan header, tidak ada teks di atasnya.
+         Diputar sekali tiap halaman dibuka lalu berhenti di frame akhir (logo utuh). -->
+    <section class="brand-stage" id="top" aria-label="Animasi logo PATRA: Tap, Review, &amp; Upgrade">
+      <video id="brandVideo" class="brand-stage__video" muted playsinline preload="auto" poster="assets/img/intro-poster.jpg" aria-hidden="true"></video>
+      <script>
+        /* Pilih video sesuai orientasi & mulai unduh sedini mungkin (sebelum CSS/JS lain selesai) */
+        (function (v) {
+          var tall = matchMedia('(orientation: portrait)').matches;
+          var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+          v.src = 'assets/video/patra-logo-reveal-' + (tall ? 'portrait' : 'desktop') + '.mp4';
+          if (!still) v.autoplay = true;
+        })(document.getElementById('brandVideo'));
+      </script>
+      <img class="brand-stage__still" id="brandStill" alt="" aria-hidden="true">
+      <span class="logo logo--lockup brand-stage__fallback" aria-hidden="true"></span>
+    </section>
+
     <!-- ===================== HERO ===================== -->
-    <section class="hero" id="top">
+    <section class="hero">
       <div class="hero__blob" aria-hidden="true"></div>
       <div class="container hero__grid">
         <div class="hero__copy">
-          <span class="chip reveal"><span class="dot"></span>Kartu NFC + QR untuk Google Review</span>
           <h1 class="hero__title reveal" id="heroTitle">Satu Tap, Ulasan Google <em>Mengalir.</em></h1>
           <p class="hero__sub reveal" id="heroSub">Pelanggan cukup menempelkan ponsel ke kartu PATRA atau memindai QR-nya, halaman ulasan Google bisnis Anda langsung terbuka. Tanpa aplikasi, tanpa ribet.</p>
           <div class="hero__ctas reveal">
@@ -101,17 +103,10 @@
 
         <div class="hero__visual reveal">
           <div class="pcard-stage" id="cardStage">
-            <div class="pcard" id="heroCard" aria-label="Kartu PATRA: logo patra, ikon NFC, bintang, tulisan TAP · SCAN · REVIEW, dan kode QR" role="img">
+            <div class="pcard" id="heroCard">
+              <img class="pcard__img" src="assets/img/kartu-patra-foto.webp" alt="Kartu PATRA: logo patra, TAP · REVIEW · UPGRADE, ikon NFC, dan kode QR" width="2000" height="2000" decoding="async">
               <span class="pcard__sheen" aria-hidden="true"></span>
-              <span class="pcard__leaf" aria-hidden="true"></span>
-              <span class="pcard__frame" aria-hidden="true"></span>
-              <span class="logo pcard__logo" aria-hidden="true"></span>
-              <span class="pcard__nfc" aria-hidden="true"><i data-ic="nfc"></i></span>
-              <img class="pcard__star" src="assets/img/star.svg" alt="" width="100" height="100">
-              <span class="pcard__tag" aria-hidden="true">TAP · SCAN · REVIEW</span>
-              <span class="pcard__qr" aria-hidden="true"><img src="assets/img/qr.svg" alt="" width="23" height="23"></span>
             </div>
-            <div class="hero__badge" aria-hidden="true"><span class="hero__badge-ic"><img src="assets/img/star.svg" alt=""></span>Tap, Review, &amp; Upgrade</div>
             <div class="hero__shadow" aria-hidden="true"></div>
           </div>
         </div>
@@ -388,6 +383,6 @@
 
   <script src="assets/js/config.js" defer></script>
   <script src="assets/js/core.js" defer></script>
-  <script src="assets/js/landing.js" defer></script>
+  <script src="assets/js/landing.js?v=20261122l" defer></script>
 </body>
 </html>
