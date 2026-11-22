@@ -31,40 +31,53 @@
 .no-js .reveal { opacity: 1; transform: none; }
 
 /* ---------- Video logo PATRA: visual utama awal halaman (bukan splash) ---------- */
-/* Framing pakai object-fit: cover, tapi rasio panggung dibatasi per orientasi sehingga yang terpotong
-   hanya latar video, tidak pernah logo/tagline (diukur dari frame video):
-   - Landscape → video 16:9, logo di x 17–81%, y 31–67%. Panggung ≥ 4:3 → sisi terpotong maks. 12,5%.
-   - Portrait  → video 9:16, logo di x 5–94%,  y 41–57%. Panggung ≥ 9:16 → hanya atas/bawah yang terpotong.
-   Tinggi menyisakan sedikit ruang agar konten berikutnya mengintip (ajakan menggulir). */
+/* Panggung pendek (240–330px) → hero ikut terlihat di layar pertama. Logo di video ada di x 17–81%,
+   y 31–67% (tinggi blok logo = 36% tinggi video). Ukuran video dihitung dari ruang kosong di antara
+   bawah header dan awal area pudar, jadi logo selalu utuh & proporsional di semua layar. Tepi video
+   dipudarkan ke latar yang warnanya diambil dari tepi frame video → tidak tampak seperti kotak. */
 .brand-stage {
-  --stage-h: min(max(320px, calc(100vh - 72px)), 75vw);
+  --stage-h: clamp(240px, min(6vw + 220px, 45vh), 330px);
+  --nav-b: calc(var(--nav-top) + var(--nav-h));                  /* bawah header pil */
+  --logo-h: min(var(--stage-h) * .76 - var(--nav-b) - 32px, 27vw); /* 20px di bawah header, 12px sebelum pudar (pudar = 24% bawah); 27vw = logo maks ±85% lebar layar */
+  --video-h: calc(var(--logo-h) / .36);
+  --video-w: calc(var(--video-h) * 16 / 9);
   position: relative; overflow: hidden; isolation: isolate;
   height: var(--stage-h);
-  background: var(--brand-gradient);   /* = warna frame pertama video & poster → tanpa kedip saat memuat */
+  background: var(--brand-gradient);   /* = frame pertama video & poster (gelap) → tanpa kedip saat memuat */
 }
-@supports (height: 100svh) { .brand-stage { --stage-h: min(max(320px, calc(100svh - 72px)), 75vw); } }
-@media (orientation: portrait) {
-  .brand-stage { --stage-h: min(max(420px, calc(100vh - 96px)), 177.78vw); }
-  @supports (height: 100svh) { .brand-stage { --stage-h: min(max(420px, calc(100svh - 96px)), 177.78vw); } }
+@supports (height: 100svh) { .brand-stage { --stage-h: clamp(240px, min(6vw + 220px, 45svh), 330px); } }
+/* Video menjadi terang dalam 0,5 dtk pertama → latar ikut terang bersamaan. Warna = kolom tepi kiri
+   (::before) & kanan (::after) frame akhir video, dibaurkan ke tengah → menyambung mulus dengan tepi video. */
+.brand-stage::before, .brand-stage::after { content: ""; position: absolute; z-index: -1; inset: 0; opacity: 0; transition: opacity .5s ease-out; }
+.brand-stage::before { background: linear-gradient(to bottom, #1e3f30, #204636 25%, #28583f 50%, #3b734d 75%, #488555); }
+.brand-stage::after {
+  background: linear-gradient(to bottom, #73883c, #5b7c40 25%, #3a6d48 50%, #2a684c 75%, #29664b);
+  -webkit-mask-image: linear-gradient(to right, transparent 25%, #000 75%); mask-image: linear-gradient(to right, transparent 25%, #000 75%);
 }
-.brand-stage__video, .brand-stage__still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; transition: opacity .5s ease; }
+.brand-stage.is-lit::before, .brand-stage.is-lit::after, .brand-stage.is-done::before, .brand-stage.is-done::after { opacity: 1; }
+.brand-stage__video, .brand-stage__still {
+  position: absolute; left: 50%; top: calc(var(--nav-b) + 20px - var(--video-h) * .31); transform: translateX(-50%);
+  width: var(--video-w); max-width: none; height: var(--video-h); object-fit: cover;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+  transition: opacity .5s ease;
+}
 .brand-stage__still { opacity: 0; transition: none; }   /* piksel identik dgn frame akhir → tukar seketika */
 .brand-stage.is-done .brand-stage__still { opacity: 1; }
 .brand-stage.is-done .brand-stage__video { visibility: hidden; }
 /* Tepi bawah melebur ke latar halaman: panggung dibuat transparan bertahap (mask), bukan ditimpa
-   lapisan warna → tidak ada tepi lapisan yang bisa tampil sebagai garis. Kurva smoothstep (landai di
-   kedua ujung). Dimulai di bawah tagline (logo berakhir di ±67% tinggi panggung). */
+   lapisan warna → tidak ada garis. Kurva smoothstep; dimulai di bawah tagline. */
 .brand-stage {
-  --fade: min(32%, 260px);
+  --fade: 24%;
   --fade-curve: linear-gradient(to bottom, #000, rgba(0, 0, 0, .972) 10%, rgba(0, 0, 0, .896) 20%, rgba(0, 0, 0, .784) 30%,
     rgba(0, 0, 0, .648) 40%, rgba(0, 0, 0, .5) 50%, rgba(0, 0, 0, .352) 60%, rgba(0, 0, 0, .216) 70%, rgba(0, 0, 0, .104) 80%,
     rgba(0, 0, 0, .028) 90%, transparent);
   -webkit-mask: linear-gradient(#000, #000) top / 100% calc(100% - var(--fade) + 1px) no-repeat, var(--fade-curve) bottom / 100% var(--fade) no-repeat;
           mask: linear-gradient(#000, #000) top / 100% calc(100% - var(--fade) + 1px) no-repeat, var(--fade-curve) bottom / 100% var(--fade) no-repeat;
 }
-/* Cadangan bila video gagal dimuat / autoplay ditolak: logo PATRA statis di latar yang sama */
-.brand-stage__fallback { position: absolute; z-index: 1; left: 50%; top: 50%; width: min(64vw, 520px); height: auto; color: var(--mint-logo); opacity: 0; transform: translate(-50%, -50%) scale(.97); transition: opacity .6s ease, transform .9s var(--ease-out); }
-@media (orientation: portrait) { .brand-stage__fallback { width: min(80vw, 520px); } }
+/* Cadangan bila video gagal dimuat / autoplay ditolak: logo PATRA statis seukuran logo di video */
+.brand-stage__fallback { position: absolute; z-index: 1; left: 50%; top: calc(var(--nav-b) + 20px + var(--logo-h) / 2); width: calc(var(--video-w) * .64); height: auto; color: var(--mint-logo); opacity: 0; transform: translate(-50%, -50%) scale(.97); transition: opacity .6s ease, transform .9s var(--ease-out); }
 .brand-stage.is-fallback .brand-stage__fallback { opacity: 1; transform: translate(-50%, -50%); }
 .brand-stage.is-fallback .brand-stage__video { opacity: 0; }
 
