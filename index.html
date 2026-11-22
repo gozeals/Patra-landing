@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;0,800;1,800&display=swap">
   <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/landing.css?v=20261122l">
+  <link rel="stylesheet" href="assets/css/landing.css?v=20261122m">
 </head>
 <body>
   <a class="skip-link" href="#main">Langsung ke konten</a>
@@ -94,11 +94,6 @@
             <a class="btn btn--primary btn--lg" data-order data-pos="hero" href="https://lynk.id/patra" target="_blank" rel="noopener">Pesan Sekarang <i data-ic="arrow-right"></i></a>
             <a class="btn btn--outline btn--lg" data-wa data-pos="hero" href="#" target="_blank" rel="noopener"><i data-ic="whatsapp"></i> Tanya via WhatsApp</a>
           </div>
-          <ul class="hero__minis reveal" role="list">
-            <li><span class="mini-ic"><i data-ic="zap"></i></span><span><b>Praktis</b>Langsung aktif</span></li>
-            <li><span class="mini-ic"><i data-ic="smartphone"></i></span><span><b>Tanpa Aplikasi</b>iOS &amp; Android</span></li>
-            <li><span class="mini-ic"><i data-ic="gem"></i></span><span><b>Modern</b>Desain premium</span></li>
-          </ul>
         </div>
 
         <div class="hero__visual reveal">
@@ -118,7 +113,6 @@
     <section class="section section--alt" id="masalah">
       <div class="container">
         <header class="sec-head reveal">
-          <span class="eyebrow">Diagnosa reputasi</span>
           <h2>Mengapa Bisnis Bagus Kurang Ulasan?</h2>
           <p>Banyak pelanggan puas, tapi hanya sedikit yang meluangkan waktu menulis ulasan. Bukan karena tidak mau, melainkan karena prosesnya terlalu panjang.</p>
         </header>
@@ -146,7 +140,6 @@
       <div class="container">
         <header class="sec-head sec-head--split reveal">
           <div>
-            <span class="eyebrow">Fitur utama</span>
             <h2>Keunggulan Kartu PATRA</h2>
           </div>
           <p>Dirancang untuk dipakai setiap hari di meja kasir, resepsionis, atau meja makan — kuat, rapi, dan mudah dipahami siapa saja.</p>
@@ -166,7 +159,6 @@
         <div class="band reveal">
           <div class="band__glow" aria-hidden="true"></div>
           <header class="band__head">
-            <span class="eyebrow eyebrow--mint">Alur 3 langkah</span>
             <h2>Cara Kerja Kartu PATRA</h2>
             <p>Mekanisme sederhana yang mengubah pelanggan puas menjadi ulasan nyata.</p>
           </header>
@@ -174,21 +166,18 @@
             <li class="step">
               <span class="step__num">1</span>
               <span class="step__ic"><i data-ic="tap"></i></span>
-              <span class="step__k">Langkah 01</span>
               <h3>TAP</h3>
               <p>Pelanggan menempelkan ponsel ke kartu PATRA — atau memindai kode QR-nya.</p>
             </li>
             <li class="step">
               <span class="step__num">2</span>
               <span class="step__ic"><i data-ic="star"></i></span>
-              <span class="step__k">Langkah 02</span>
               <h3>REVIEW</h3>
               <p>Halaman ulasan Google bisnis Anda terbuka otomatis. Tinggal beri bintang dan tulis.</p>
             </li>
             <li class="step">
               <span class="step__num">3</span>
               <span class="step__ic"><i data-ic="trending-up"></i></span>
-              <span class="step__k">Langkah 03</span>
               <h3>UPGRADE</h3>
               <p>Ulasan bertambah, reputasi naik, bisnis Anda lebih mudah ditemukan di Google.</p>
             </li>
@@ -204,9 +193,8 @@
     <section class="section" id="usaha">
       <div class="container">
         <header class="sec-head sec-head--center reveal">
-          <span class="eyebrow">Ekosistem penerapan</span>
           <h2>Dirancang untuk Segala Jenis Usaha</h2>
-          <p>Di mana pun pelanggan Anda dilayani, di situ kartu PATRA bekerja.</p>
+          <p>Dimana pun pelanggan Anda dilayani, di situ kartu PATRA bekerja.</p>
         </header>
         <ul class="biz-grid" role="list">
           <li class="biz reveal"><span class="biz__ic"><i data-ic="utensils"></i></span><b>Restoran</b><span>Di meja makan</span></li>
@@ -230,7 +218,7 @@
             <span class="cta__qr"><img src="assets/img/qr.svg" alt=""></span>
           </div>
           <div class="cta__copy">
-            <h2>Siap Panen Ulasan Google?</h2>
+            <h2>Siap Panen Ulasan?</h2>
             <p>Pilih kartu PATRA untuk bisnis Anda. Detail produk, harga, dan pembayaran tersedia di halaman pemesanan kami.</p>
           </div>
           <div class="cta__act">
@@ -246,7 +234,6 @@
       <div class="container">
         <header class="sec-head sec-head--split reveal">
           <div>
-            <span class="eyebrow">Kisah sukses mitra</span>
             <h2>Apa Kata Pemilik Usaha</h2>
           </div>
           <div class="slider-nav">
@@ -384,5 +371,7 @@
   <script src="assets/js/config.js" defer></script>
   <script src="assets/js/core.js" defer></script>
   <script src="assets/js/landing.js?v=20261122l" defer></script>
+  <!-- Mode Edit UI: alat lokal, hanya di localhost dengan ?edit (filenya tidak di-deploy) -->
+  <script>if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && /[?&]edit\b/.test(location.search)) document.body.appendChild(Object.assign(document.createElement('script'), { src: 'assets/js/edit-mode.js?' + Date.now() }));</script>
 </body>
 </html>
