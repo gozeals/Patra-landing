@@ -16,12 +16,11 @@
 
   /* ======================= VIDEO LOGO (visual utama awal halaman) ======================= */
   // Bukan splash: tidak mengunci scroll, tidak menyembunyikan header, konten lain tidak menunggu.
-  // src & autoplay diset di index.html (skrip tepat setelah <video>) agar unduhan mulai sedini mungkin.
+  // src & autoplay diset di index.html agar unduhan mulai sedini mungkin.
   // Diputar sekali tiap halaman dibuka, lalu berhenti di frame akhir (logo utuh).
   (function brandVideo() {
     const stage = $('#top'), video = $('#brandVideo');
     if (!stage || !video) return;
-    const srcFor = tall => 'assets/video/patra-logo-reveal-' + (tall ? 'portrait' : 'desktop') + '.mp4';
     const onMeta = fn => { if (video.readyState >= 1) fn(); else video.addEventListener('loadedmetadata', fn, { once: true }); };
     const toLastFrame = () => { if (video.duration) video.currentTime = Math.max(0, video.duration - 0.05); };
     const fallback = () => { stage.classList.add('is-fallback'); try { video.pause(); } catch (e) {} };
@@ -32,9 +31,8 @@
     // Safari bisa memutar ulang / mengosongkan video yang sudah selesai saat digulir keluar lalu kembali.
     // Karena itu frame akhir dibekukan ke <img>: logo tetap tampil apa pun yang dilakukan browser pada video.
     const still = $('#brandStill');
-    let done = false;
     const freeze = () => {
-      done = true; video.autoplay = false;
+      video.autoplay = false;
       const c = document.createElement('canvas');
       c.width = video.videoWidth; c.height = video.videoHeight;
       try { c.getContext('2d').drawImage(video, 0, 0); } catch (e) { return; }
@@ -46,7 +44,8 @@
       }, 'image/jpeg', 0.92);
     };
     video.addEventListener('ended', freeze);
-    video.addEventListener('seeked', () => { if (done || reduceMotion) freeze(); });
+    video.addEventListener('seeked', () => { if (reduceMotion) freeze(); });
+    video.addEventListener('playing', () => stage.classList.add('is-lit'), { once: true });   // latar ikut terang bersama video
 
     if (reduceMotion) {
       onMeta(toLastFrame);                          // tanpa gerak: langsung frame akhir, animasi tidak diputar
@@ -54,18 +53,8 @@
       // Autoplay ditolak (mis. mode hemat daya iOS) → logo statis. Jaringan lambat / tab latar: poster
       // gradien tampil sampai video siap (tanpa timer — browser menunda autoplay di tab latar).
       const p = video.play();
-      if (p && p.catch) p.catch(e => { if (e.name === 'NotAllowedError') fallback(); });   // AbortError (src diganti) bukan kegagalan
+      if (p && p.catch) p.catch(e => { if (e.name === 'NotAllowedError') fallback(); });   // AbortError bukan kegagalan
     }
-
-    // Layar diputar (HP/tablet): ganti ke video yang sesuai orientasi agar logo tetap utuh
-    const mq = matchMedia('(orientation: portrait)');
-    mq.addEventListener('change', () => {
-      const next = srcFor(mq.matches);
-      if (stage.classList.contains('is-fallback') || video.src.indexOf(next) > -1) return;
-      const finished = done || reduceMotion, t = video.currentTime;
-      video.src = next;
-      onMeta(() => { if (finished) toLastFrame(); else { video.currentTime = t; video.play().catch(() => {}); } });
-    });
   })();
 
   /* ======================= KONTEN DINAMIS ======================= */

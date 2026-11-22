@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;0,800;1,800&display=swap">
   <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/landing.css?v=20261122m">
+  <link rel="stylesheet" href="assets/css/landing.css?v=20261122q">
 </head>
 <body>
   <a class="skip-link" href="#main">Langsung ke konten</a>
@@ -69,16 +69,9 @@
          Bukan splash: tidak mengunci scroll, tidak menyembunyikan header, tidak ada teks di atasnya.
          Diputar sekali tiap halaman dibuka lalu berhenti di frame akhir (logo utuh). -->
     <section class="brand-stage" id="top" aria-label="Animasi logo PATRA: Tap, Review, &amp; Upgrade">
-      <video id="brandVideo" class="brand-stage__video" muted playsinline preload="auto" poster="assets/img/intro-poster.jpg" aria-hidden="true"></video>
-      <script>
-        /* Pilih video sesuai orientasi & mulai unduh sedini mungkin (sebelum CSS/JS lain selesai) */
-        (function (v) {
-          var tall = matchMedia('(orientation: portrait)').matches;
-          var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-          v.src = 'assets/video/patra-logo-reveal-' + (tall ? 'portrait' : 'desktop') + '.mp4';
-          if (!still) v.autoplay = true;
-        })(document.getElementById('brandVideo'));
-      </script>
+      <video id="brandVideo" class="brand-stage__video" src="assets/video/patra-logo-reveal-desktop.mp4" muted playsinline preload="auto" poster="assets/img/intro-poster.jpg" aria-hidden="true"></video>
+      <!-- Autoplay langsung, kecuali pengunjung membatasi animasi (reduced motion) -->
+      <script>if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.getElementById('brandVideo').autoplay = true;</script>
       <img class="brand-stage__still" id="brandStill" alt="" aria-hidden="true">
       <span class="logo logo--lockup brand-stage__fallback" aria-hidden="true"></span>
     </section>
@@ -370,7 +363,7 @@
 
   <script src="assets/js/config.js" defer></script>
   <script src="assets/js/core.js" defer></script>
-  <script src="assets/js/landing.js?v=20261122l" defer></script>
+  <script src="assets/js/landing.js?v=20261122n" defer></script>
   <!-- Mode Edit UI: alat lokal, hanya di localhost dengan ?edit (filenya tidak di-deploy) -->
   <script>if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && /[?&]edit\b/.test(location.search)) document.body.appendChild(Object.assign(document.createElement('script'), { src: 'assets/js/edit-mode.js?' + Date.now() }));</script>
 </body>
